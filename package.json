@@ -10,6 +10,9 @@
   "categories": [
     "Other"
   ],
+  "extensionDependencies": [
+    "RiversideSoftware.openedge-abl-lsp"
+  ],  
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {

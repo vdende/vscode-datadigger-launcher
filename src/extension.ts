@@ -5,10 +5,19 @@ import * as vscode from 'vscode';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "abl-datadigger" is now active!');
+	console.log("ABL DataDigger extension active");
+
+  	// Riverside dependency check
+  	const ablExt = vscode.extensions.getExtension(
+    	"RiversideSoftware.openedge-abl-lsp"
+  	);
+	if (!ablExt) {
+		vscode.window.showErrorMessage("OpenEdge ABL extension from Riverside Software is not installed!");
+	} else {
+		console.log("Riverside ABL LSP API:", ablExt.exports);
+	}
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
