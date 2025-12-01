@@ -105,4 +105,14 @@ export class OpenEdgeAblExtensionService {
         return this.api?.getProjectInfo(projectUri);
     }
 
+    /**
+     * Gets the project info for the given project URI
+     * 
+     * @param projectUri 
+     * @returns ProjectInfo
+     */
+    public async getProjectInfos(): Promise<Map<string, ProjectInfo>> {
+        return this.projectInfoMap
+    }
+
 }

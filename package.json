@@ -18,6 +18,18 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "ABL DataDigger",
+      "properties": {
+        "abl.datadigger.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path the local DataDigger instance",
+          "scope": "resource"
+        }
+      }
+    },
     "commands": [
       {
         "command": "abl-datadigger.helloWorld",
