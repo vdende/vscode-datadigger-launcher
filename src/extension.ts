@@ -8,11 +8,11 @@ import * as fs from 'fs';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log("[abl-datadigger] Extension actived");
+  // Use the console to output diagnostic information (console.log) and errors (console.error)
+  // This line of code will only be executed once when your extension is activated
+  console.log("[abl-datadigger] Extension actived");
 
-  	// Riverside dependency check - and get project infos
+ 	// Riverside dependency check - and get project infos
 	const ablExt = await OpenEdgeAblExtensionService.getInstance();
 
 	// check datadigger path for each project
@@ -36,7 +36,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					`Please check the path in the settings.`
 				);
 				ddError = true;
-			} 
+			}
 		}
 	} // for
 	if (ddError) {
@@ -59,11 +59,10 @@ export async function activate(context: vscode.ExtensionContext) {
 export function deactivate() {}
 
 function getDiggerPathForProject(projectUri?: vscode.Uri): string | undefined {
-    // section = undefined → we gebruiken de “root” (dus key is 'abl.datadigger.path')
-    // resource = projectUri → VS Code zoekt automatisch:
-    //   WorkspaceFolder setting -> Workspace setting -> User setting
-    vscode.workspace.getConfiguration()
+  // section = undefined → we gebruiken de 'root' (dus key is 'abl.datadigger.path')
+  // resource = projectUri → VS Code zoekt automatisch:
+  //   WorkspaceFolder setting -> Workspace setting -> User setting
 	const config = vscode.workspace.getConfiguration(undefined, projectUri);
-    const value = config.get<string>('abl.datadigger.path');
-    return value || undefined;
+  const value = config.get<string>('abl.datadigger.path');
+  return value || undefined;
 }
