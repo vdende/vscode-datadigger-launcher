@@ -32,15 +32,6 @@ export class OpenEdgeAblExtensionService {
   }
 
   /**
-   * A constructor cannot be called with async, so we wait until initialization is done
-   */
-  private async waitUntilReady(): Promise<void> {
-    while (!this.initialized) {
-      await new Promise((resolve) => setTimeout(resolve, 20));
-    }
-  }
-
-  /**
    * Initializes the OpenEdge ABL Extension Service
    */
   private async initialize() {
@@ -87,7 +78,9 @@ export class OpenEdgeAblExtensionService {
         info.dlcHome = (await vscode.commands.executeCommand("abl.getDlcDirectory", folderPath)) as string;
 
         // get db connections and assign it to the project info
-        info.dbConnections = this.getDbConnections(folderPath);
+        const oeProjectJsonData = this.parseOpenEdgeProjectJson(folderPath);
+        info.dbConnections = this.getDbConnections(oeProjectJsonData);
+        info.oeVersion     = oeProjectJsonData.oeversion;
 
         // only add projects which have db connections
         if (info.dbConnections.length > 0) {
@@ -110,24 +103,33 @@ export class OpenEdgeAblExtensionService {
   }
 
   /**
-   * Gets the DB connections for the given project URI
+   * Parses the openedge-project.json file for the given project path
    *
-   * @param projectUri
-   * @returns DB connections
+   * @param projectPath
    */
-  private getDbConnections(projectPath: string): string[] {
-
+  private parseOpenEdgeProjectJson(projectPath: string): any {
     // opendge-project.json should exist
     const oeProjectJsonPath : string = path.join(projectPath, "openedge-project.json");
     if (!fs.existsSync(oeProjectJsonPath)) {
       throw new Error(`No 'openedge-project.json' is found in project: ${oeProjectJsonPath}`);
     }
 
-    // read file
+        // read file
     const jsonRaw  = fs.readFileSync(oeProjectJsonPath, "utf8");
     const jsonData = JSON.parse(jsonRaw);
 
-    const connectArray = (jsonData.dbConnections ?? [])
+    return jsonData;
+  }
+
+  /**
+   * Gets the DB connections for the given project URI
+   *
+   * @param openedge-project.json data
+   * @returns DB connections
+   */
+  private getDbConnections(oeProjectJsonData: any): string[] {
+
+    const connectArray = (oeProjectJsonData.dbConnections ?? [])
       .map((c: any) => c?.connect)
       .filter((x: any): x is string => typeof x === 'string');
 
@@ -147,13 +149,22 @@ export class OpenEdgeAblExtensionService {
   }
 
   /**
-   * Gets the project info for the given project URI
+   * Gets the project infos for all projects
    *
-   * @param projectUri
-   * @returns ProjectInfo
+   * @returns ProjectInfos
    */
   public async getProjectInfos(): Promise<Map<string, ProjectInfo>> {
     return this.projectInfoMap
+  }
+
+
+  /**
+   * A constructor cannot be called with async, so we wait until initialization is done
+   */
+  private async waitUntilReady(): Promise<void> {
+    while (!this.initialized) {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    }
   }
 
 }

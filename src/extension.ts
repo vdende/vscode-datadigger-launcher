@@ -3,7 +3,8 @@
 import * as vscode from 'vscode';
 import { OpenEdgeAblExtensionService } from './services/oeabl/OpenEdgeAblExtensionService';
 import { ProjectInfo } from './services/oeabl/ProjectInfo';
-import * as fs from 'fs';
+import { DataDiggerConfig } from './services/datadigger/DataDiggerConfig';
+import { DataDiggerProject } from './services/datadigger/DataDiggerProject';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -16,32 +17,14 @@ export async function activate(context: vscode.ExtensionContext) {
 	const ablExt = await OpenEdgeAblExtensionService.getInstance();
 
 	// check datadigger path for each project
-	const projectInfos : Map<string, ProjectInfo> = await ablExt.getProjectInfos();
-	let ddError = false;
-	for (const [projectName, projectInfo] of projectInfos) {
-		const projectUri : vscode.Uri = vscode.Uri.file(projectInfo.projectRoot);
-		console.log("[abl-datadigger] Project '" + projectName + "' path: " + projectUri);
-		const diggerPath = getDiggerPathForProject(projectUri);
-		console.log(`[abl-datadigger] DataDigger path for project '${projectName}': ${diggerPath}`);
-		if (!diggerPath) {
-			vscode.window.showWarningMessage(
-				`No valid DataDigger path found for project '${projectName}'. ` +
-				`Please set the path in the settings.`
-			);
-			ddError = true;
-		} else {
-			if (!fs.existsSync(diggerPath)) {
-				vscode.window.showWarningMessage(
-					`The configured DataDigger path '${diggerPath}' for project '${projectName}' does not exist. ` +
-					`Please check the path in the settings.`
-				);
-				ddError = true;
-			}
-		}
-	} // for
-	if (ddError) {
-		throw new Error("One or more DataDigger path errors detected. Please check the error messages.");
-	}
+  // TODO: waarom een await, kan dat niet zonder promise?
+	const oeProjects : Map<string, ProjectInfo>       = await ablExt.getProjectInfos();
+  const ddConfigs  : DataDiggerConfig               = await DataDiggerConfig.getInstance(oeProjects);
+  const ddProjects : Map<string, DataDiggerProject> = ddConfigs.getDataDiggerProjects();
+  console.log("[abl-datadigger] Number of DataDigger projects: " + ddProjects.size );
+  for (const [key, value] of ddProjects.entries()) {
+    console.log(`[abl-datadigger] - ${key}: ${JSON.stringify(value)}`);
+  }
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand

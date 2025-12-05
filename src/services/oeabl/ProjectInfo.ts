@@ -10,5 +10,6 @@ export interface ProjectInfo {
   xrefDirs: string;
   // custom added
   dlcHome: string;
+  oeVersion: string;
   dbConnections: string[];
 }
