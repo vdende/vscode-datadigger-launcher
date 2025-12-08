@@ -1,9 +1,9 @@
-import * as vscode from 'vscode';
-import * as fs from 'fs';
+import * as vscode from "vscode";
+import * as fs from "fs";
 import * as path from "path";
-import { ProjectInfo } from '../oeabl/ProjectInfo';
-import { DataDiggerProject } from './DataDiggerProject';
-import { OpenEdgeAblExtensionService } from '../oeabl/OpenEdgeAblExtensionService';
+import { ProjectInfo } from "../oeabl/ProjectInfo";
+import { OpenEdgeAblExtensionService } from "../oeabl/OpenEdgeAblExtension";
+import { DataDiggerProject } from "./DataDiggerProject";
 
 export class DataDiggerConfig {
 
