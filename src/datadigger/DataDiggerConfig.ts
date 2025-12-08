@@ -4,6 +4,7 @@ import * as path from "path";
 import { ProjectInfo } from "../oeabl/ProjectInfo";
 import { OpenEdgeAblExtensionService } from "../oeabl/OpenEdgeAblExtension";
 import { DataDiggerProject } from "./DataDiggerProject";
+import { Logger } from "../util/Logger";
 
 export class DataDiggerConfig {
 
@@ -36,7 +37,7 @@ export class DataDiggerConfig {
    */
   private async initialize() {
 
-    console.log("[abl-datadigger] Reading ABL projects and locating DataDigger instances");
+    Logger.info("Reading ABL projects and locating DataDigger instances");
 
     // Riverside dependency check - and get project infos
     const ablExt     : OpenEdgeAblExtensionService = await OpenEdgeAblExtensionService.getInstance();
@@ -52,23 +53,25 @@ export class DataDiggerConfig {
         dbConnections: projectInfo.dbConnections,
         dataDiggerPath: ""
       };
-      const projectUri: vscode.Uri = vscode.Uri.file(projectInfo.projectRoot);
+
+      const projectUri         : vscode.Uri         = vscode.Uri.file(projectInfo.projectRoot);
       const relativeDiggerPath : string | undefined = this.getDiggerPathForProject(projectUri);
-      let diggerPath   ;
-      //console.log("process.cwd():", process.cwd());
-      let message: string = "";
+      let diggerPath;
+
       if (relativeDiggerPath) {
         diggerPath = path.resolve(projectUri.fsPath, relativeDiggerPath);
-        if (!fs.existsSync(diggerPath)) {
-          message = "--> not found!";
+        if (fs.existsSync(diggerPath)) {
+          Logger.info(`DataDigger path for project '${projectName}': ${diggerPath}`);
+        } else {
+          Logger.warn(`DataDigger path for project '${projectName}': ${diggerPath} --> not found!`);
         }
       } else {
-        message = "--> not found!"
+        Logger.warn(`DataDigger path for project '${projectName}': ${diggerPath} --> not found!`);
       }
-      console.log(`[abl-datadigger] DataDigger path for project '${projectName}': ${diggerPath} ${message}`);
 
       // datadigger path path must be set
       if (!diggerPath) {
+        Logger.debug(`ProjectURI: ${projectUri.toString()}`)
         vscode.window.showWarningMessage(
           `No valid DataDigger path found for project '${projectName}'. ` +
           `Please set the path in the settings.`
@@ -78,6 +81,7 @@ export class DataDiggerConfig {
 
       // datadigger path must exist
       if (!fs.existsSync(diggerPath)) {
+        Logger.debug(`ProjectURI: ${projectUri.toString()}`)
         vscode.window.showWarningMessage(
           `The configured DataDigger path '${diggerPath}' for project '${projectName}' does not exist. ` +
           `Please check the path in the settings.`
@@ -132,7 +136,7 @@ export class DataDiggerConfig {
    * @param config DataDiggerProject object
    */
   public async startDataDigger(config: DataDiggerProject): Promise<void> {
-    console.log(`[abl-datadigger] Start DataDigger for project '${config.projectName}'`);
+    Logger.info(`Start DataDigger for project '${config.projectName}'`);
     console.log("TODO ...");
   }
 

@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 import { ProjectInfo } from "./ProjectInfo";
+import { Logger } from "../util/Logger";
 
 export class OpenEdgeAblExtensionService {
 
@@ -41,6 +42,7 @@ export class OpenEdgeAblExtensionService {
     );
 
     if (!extension) {
+      Logger.error("Riverside Software - Openedge ABL extension is not installed!");
       throw new Error("Riverside Software - Openedge ABL extension is not installed!");
     }
 
@@ -64,7 +66,8 @@ export class OpenEdgeAblExtensionService {
 
     const folders = vscode.workspace.workspaceFolders;
     if (!folders?.length) {
-      throw new Error("There are no OpenEdge projects setup!");
+      Logger.error("There are no OpenEdge projects contigured!");
+      throw new Error("There are no OpenEdge projects contigured!");
     }
 
     for (const folder of folders) {
@@ -87,9 +90,9 @@ export class OpenEdgeAblExtensionService {
         if (info.dbConnections.length > 0) {
           // key = folderName
           this.projectInfoMap.set(folder.name, info);
-          console.log(`[abl-datadigger] ABL project info loaded for: ${folder.name}`);
+          Logger.info(`ABL project info loaded for: ${folder.name}`);
         } else {
-          console.log(`[abl-datadigger] No DB connections found for project: ${folder.name}. Skipping...`);
+          Logger.warn(`No DB connections found for project: ${folder.name}. Skipping...`);
         }
       } catch (err) {
         console.error("[abl-datadigger] Error while executing getProjectInfo:", err);
@@ -111,11 +114,13 @@ export class OpenEdgeAblExtensionService {
   private parseOpenEdgeProjectJson(projectPath: string): any {
     // opendge-project.json should exist
     const oeProjectJsonPath : string = path.join(projectPath, "openedge-project.json");
+    Logger.debug(`OpenEdge project file: ${oeProjectJsonPath}`);
     if (!fs.existsSync(oeProjectJsonPath)) {
-      throw new Error(`No 'openedge-project.json' is found in project: ${oeProjectJsonPath}`);
+      Logger.error(`No 'openedge-project.json' found in project: ${oeProjectJsonPath}`);
+      throw new Error(`No 'openedge-project.json' found in project: ${oeProjectJsonPath}`);
     }
 
-        // read file
+    // read file
     const jsonRaw  = fs.readFileSync(oeProjectJsonPath, "utf8");
     const jsonData = JSON.parse(jsonRaw);
 
@@ -134,7 +139,7 @@ export class OpenEdgeAblExtensionService {
       .map((c: any) => c?.connect)
       .filter((x: any): x is string => typeof x === 'string');
 
-    //console.log(`[abl-datadigger] DB Connections for project '${projectPath}': ${connectArray.join(", ")}`);
+    Logger.debug(`DB Connections for project '${oeProjectJsonData.projectRoot}': ${connectArray.join(", ")}`);
 
     return connectArray;
   }

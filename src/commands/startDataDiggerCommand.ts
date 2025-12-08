@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { DataDiggerConfig } from "../datadigger/DataDiggerConfig";
 import { DataDiggerProject } from "../datadigger/DataDiggerProject";
+import { Logger } from "../util/Logger";
 
 /**
  * Handle start of DataDigger
@@ -17,7 +18,8 @@ export async function run(context: vscode.ExtensionContext): Promise<void> {
   // }
 
   if (ddProjects.size === 0) {
-    vscode.window.showWarningMessage("ABL DataDigger: There a no DataDigger projects configured!");
+    Logger.warn("ABL DataDigger: There are no DataDigger projects configured!");
+    vscode.window.showWarningMessage("ABL DataDigger: There are no DataDigger projects configured!");
     return;
   }
 
@@ -59,6 +61,7 @@ export async function run(context: vscode.ExtensionContext): Promise<void> {
 
   const chosenConfig = ddProjects.get(selection.label);
   if (!chosenConfig) {
+    Logger.error(`ABL DataDigger: configuration for project '${selection.label}' is not found!`);
     vscode.window.showErrorMessage(`ABL DataDigger: configuration for project '${selection.label}' is not found!`);
     return;
   }
