@@ -21,6 +21,7 @@ export class OpenEdgeAblExtensionService {
 
   /**
    * Singleton instance accessor
+   *
    * @returns OpenEdgeAblExtensionService
    */
   static async getInstance(): Promise<OpenEdgeAblExtensionService> {
@@ -86,7 +87,7 @@ export class OpenEdgeAblExtensionService {
         if (info.dbConnections.length > 0) {
           // key = folderName
           this.projectInfoMap.set(folder.name, info);
-          console.log(`[abl-datadigger] Project info loaded for: ${folder.name}`);
+          console.log(`[abl-datadigger] ABL project info loaded for: ${folder.name}`);
         } else {
           console.log(`[abl-datadigger] No DB connections found for project: ${folder.name}. Skipping...`);
         }
@@ -156,7 +157,6 @@ export class OpenEdgeAblExtensionService {
   public async getProjectInfos(): Promise<Map<string, ProjectInfo>> {
     return this.projectInfoMap
   }
-
 
   /**
    * A constructor cannot be called with async, so we wait until initialization is done

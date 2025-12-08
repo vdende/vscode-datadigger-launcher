@@ -1,8 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { OpenEdgeAblExtensionService } from './services/oeabl/OpenEdgeAblExtensionService';
-import { ProjectInfo } from './services/oeabl/ProjectInfo';
 import { DataDiggerConfig } from './services/datadigger/DataDiggerConfig';
 import { DataDiggerProject } from './services/datadigger/DataDiggerProject';
 
@@ -13,39 +11,80 @@ export async function activate(context: vscode.ExtensionContext) {
   // This line of code will only be executed once when your extension is activated
   console.log("[abl-datadigger] Extension actived");
 
- 	// Riverside dependency check - and get project infos
-	const ablExt = await OpenEdgeAblExtensionService.getInstance();
+  // first read OE Projects and DataDigger projects, to handle the checks
+  let ddConfigs : DataDiggerConfig = await DataDiggerConfig.getInstance();
 
-	// check datadigger path for each project
-  // TODO: waarom een await, kan dat niet zonder promise?
-	const oeProjects : Map<string, ProjectInfo>       = await ablExt.getProjectInfos();
-  const ddConfigs  : DataDiggerConfig               = await DataDiggerConfig.getInstance(oeProjects);
+  const configListener = vscode.workspace.onDidChangeConfiguration(async e => {
+    // reset DataDiggerConfig when a Setting in scope of 'abl.datadigger' is changed
+    if (e.affectsConfiguration("abl.datadigger")) {
+      console.log("[abl-datadigger] Configuration changed, rebuilding projectConfigs...");
+      ddConfigs.clear();
+      ddConfigs = await DataDiggerConfig.getInstance();
+    }
+  });
+  context.subscriptions.push(configListener);
+
+  const startCommand = vscode.commands.registerCommand(
+    "abl-datadigger.start",
+    async () => {
+      await handleStartDataDigger();
+    }
+  );
+  context.subscriptions.push(startCommand);
+}
+
+/**
+ * Handle start of DataDigger
+ *
+ * @returns
+ */
+async function handleStartDataDigger(): Promise<void> {
+
+  const ddConfigs  : DataDiggerConfig               = await DataDiggerConfig.getInstance();
   const ddProjects : Map<string, DataDiggerProject> = ddConfigs.getDataDiggerProjects();
-  console.log("[abl-datadigger] Number of DataDigger projects: " + ddProjects.size );
-  for (const [key, value] of ddProjects.entries()) {
-    console.log(`[abl-datadigger] - ${key}: ${JSON.stringify(value)}`);
+  // console.log("[abl-datadigger] Number of DataDigger projects: " + ddProjects.size );
+  // for (const [key, value] of ddProjects.entries()) {
+  //   console.log(`[abl-datadigger] - ${key}: ${JSON.stringify(value)}`);
+  // }
+
+  if (ddProjects.size === 0) {
+    vscode.window.showWarningMessage("ABL DataDigger: There a no DataDigger projects configured!");
+    return;
   }
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('abl-datadigger.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from ABL DataDigger!');
-	});
+  // When one project, start it directly
+  if (ddProjects.size === 1) {
+    const [ddProjectConfig] = ddProjects.values();
+    await ddConfigs.startDataDigger(ddProjectConfig);
+    return;
+  }
 
-	context.subscriptions.push(disposable);
+  // More projects -> show QuickPick
+  const items: vscode.QuickPickItem[] = [];
+  for (const [projectName, ddProjectConfig] of ddProjects.entries()) {
+    items.push({
+      label: projectName,
+      description: ddProjectConfig.projectDir ?? ddProjectConfig.dataDiggerPath ?? ''
+    });
+  }
+
+  const selection = await vscode.window.showQuickPick(items, {
+    placeHolder: "Pick the OpenEdge project for ABL DataDigger"
+  });
+
+  if (!selection) {
+    // user cancelled it
+    return;
+  }
+
+  const chosenConfig = ddProjects.get(selection.label);
+  if (!chosenConfig) {
+    vscode.window.showErrorMessage(`ABL DataDigger: configuration for project '${selection.label}' is not found!`);
+    return;
+  }
+
+  await ddConfigs.startDataDigger(chosenConfig);
 }
 
 // This method is called when your extension is deactivated
 export function deactivate() {}
-
-function getDiggerPathForProject(projectUri?: vscode.Uri): string | undefined {
-  // section = undefined → we gebruiken de 'root' (dus key is 'abl.datadigger.path')
-  // resource = projectUri → VS Code zoekt automatisch:
-  //   WorkspaceFolder setting -> Workspace setting -> User setting
-	const config = vscode.workspace.getConfiguration(undefined, projectUri);
-  const value = config.get<string>('abl.datadigger.path');
-  return value || undefined;
-}

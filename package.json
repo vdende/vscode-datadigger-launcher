@@ -12,7 +12,7 @@
   ],
   "extensionDependencies": [
     "RiversideSoftware.openedge-abl-lsp"
-  ],  
+  ],
   "activationEvents": [
     "onStartupFinished"
   ],
@@ -32,10 +32,19 @@
     },
     "commands": [
       {
-        "command": "abl-datadigger.helloWorld",
-        "title": "Hello World"
+        "command": "abl-datadigger.start",
+        "title": "Start",
+        "category": "ABL DataDigger"
       }
-    ]
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "abl-datadigger.start",
+          "when": "true"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from "path";
 import { ProjectInfo } from '../oeabl/ProjectInfo';
 import { DataDiggerProject } from './DataDiggerProject';
+import { OpenEdgeAblExtensionService } from '../oeabl/OpenEdgeAblExtensionService';
 
 export class DataDiggerConfig {
 
@@ -14,17 +15,17 @@ export class DataDiggerConfig {
   /**
    * Constructor
    */
-  private constructor(oeProjects: Map<string, ProjectInfo>) {
-    this.initialize(oeProjects);
+  private constructor() {
+    this.initialize();
   }
 
   /**
    * Singleton instance accessor
-   * @returns OpenEdgeAblExtensionService
+   * @returns DataDiggerConfig object
    */
-  static async getInstance(oeProjects: Map<string, ProjectInfo>): Promise<DataDiggerConfig> {
+  static async getInstance(): Promise<DataDiggerConfig> {
     if (!DataDiggerConfig.instance) {
-      DataDiggerConfig.instance = new DataDiggerConfig(oeProjects);
+      DataDiggerConfig.instance = new DataDiggerConfig();
       await DataDiggerConfig.instance.waitUntilReady();
     }
     return DataDiggerConfig.instance;
@@ -33,7 +34,13 @@ export class DataDiggerConfig {
   /**
    * Initializes the DataDigger Config
    */
-  private async initialize(oeProjects: Map<string, ProjectInfo>) {
+  private async initialize() {
+
+    console.log("[abl-datadigger] Reading ABL projects and locating DataDigger instances");
+
+    // Riverside dependency check - and get project infos
+    const ablExt     : OpenEdgeAblExtensionService = await OpenEdgeAblExtensionService.getInstance();
+    const oeProjects : Map<string, ProjectInfo>    = await ablExt.getProjectInfos();
 
     // start filling the ddProjectConfigMap from the given oeProjects
     for (const [projectName, projectInfo] of oeProjects) {
@@ -101,12 +108,32 @@ export class DataDiggerConfig {
   }
 
   /**
+   * Clears the Map and Instance
+   *
+   * @returns DataDigger project configs
+   */
+  public clear(): void {
+    this.ddProjectConfigMap.clear();
+    DataDiggerConfig.instance = undefined;
+  }
+
+  /**
    * Gets the datadigger project configs for all projects
    *
    * @returns DataDigger project configs
    */
   public getDataDiggerProjects(): Map<string, DataDiggerProject> {
     return this.ddProjectConfigMap;
+  }
+
+  /**
+   * Start DataDigger for project
+   *
+   * @param config DataDiggerProject object
+   */
+  public async startDataDigger(config: DataDiggerProject): Promise<void> {
+    console.log(`[abl-datadigger] Start DataDigger for project '${config.projectName}'`);
+    console.log("TODO ...");
   }
 
   /**
