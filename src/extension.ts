@@ -10,7 +10,7 @@ import { Logger } from "./util/Logger";
 export async function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
-  Logger.info("Extension actived");
+  Logger.info("Starting ABL DataDigger extension ...");
 
   // first read OE Projects and DataDigger projects, to handle the checks
   let ddConfigs : DataDiggerConfig = await DataDiggerConfig.getInstance();
@@ -34,6 +34,8 @@ export async function activate(context: vscode.ExtensionContext) {
     await startDataDigger.run(context);
   });
   context.subscriptions.push(startCommand);
+
+  Logger.info("ABL DataDigger extension started");
 }
 
 // This method is called when your extension is deactivated

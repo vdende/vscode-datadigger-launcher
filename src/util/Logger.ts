@@ -35,6 +35,7 @@ export class Logger {
    * @param message
    */
   static info(message: string) {
+    console.log(`[abl-datadigger] [info] ${message}`);
     this.write("info", "ℹ️", message);
   }
 
@@ -44,6 +45,7 @@ export class Logger {
    * @param message
    */
   static warn(message: string) {
+    console.log(`[abl-datadigger] [warn] ${message}`);
     this.write("warn", "⚠️", message);
   }
 
@@ -52,6 +54,7 @@ export class Logger {
    * @param message
    */
   static error(message: string) {
+    console.log(`[abl-datadigger] [error] ${message}`);
     this.write("error", "❌", message);
   }
 
@@ -60,6 +63,7 @@ export class Logger {
    * @param message
    */
   static debug(message: string) {
+    console.log(`[abl-datadigger] [debug] ${message}`);
     if (!this.showDebug) return;
     this.write("debug", "🐞", message);
   }

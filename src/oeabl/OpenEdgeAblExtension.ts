@@ -81,20 +81,22 @@ export class OpenEdgeAblExtensionService {
         // get DLC home and assign it to the project info
         info.dlcHome = (await vscode.commands.executeCommand("abl.getDlcDirectory", folderPath)) as string;
 
+        Logger.info(`ABL project info loaded for: ${folder.name}`);
+
         // get db connections and assign it to the project info
         const oeProjectJsonData = this.parseOpenEdgeProjectJson(folderPath);
-        info.dbConnections = this.getDbConnections(oeProjectJsonData);
+        info.dbConnections = this.getDbConnections(oeProjectJsonData, folder.name);
         info.oeVersion     = oeProjectJsonData.oeversion;
 
         // only add projects which have db connections
         if (info.dbConnections.length > 0) {
           // key = folderName
           this.projectInfoMap.set(folder.name, info);
-          Logger.info(`ABL project info loaded for: ${folder.name}`);
         } else {
-          Logger.warn(`No DB connections found for project: ${folder.name}. Skipping...`);
+          Logger.warn(`No DB connections found for project '${folder.name}'`);
         }
       } catch (err) {
+        Logger.error("Error while executing getProjectInfo: " + err);
         console.error("[abl-datadigger] Error while executing getProjectInfo:", err);
       }
     }
@@ -133,13 +135,14 @@ export class OpenEdgeAblExtensionService {
    * @param openedge-project.json data
    * @returns DB connections
    */
-  private getDbConnections(oeProjectJsonData: any): string[] {
+  private getDbConnections(oeProjectJsonData: any, folderName: string): string[] {
 
     const connectArray = (oeProjectJsonData.dbConnections ?? [])
       .map((c: any) => c?.connect)
       .filter((x: any): x is string => typeof x === 'string');
 
-    Logger.debug(`DB Connections for project '${oeProjectJsonData.projectRoot}': ${connectArray.join(", ")}`);
+    //Logger.debug(JSON.stringify(oeProjectJsonData, null, 2));
+    Logger.debug(`DB connections for project '${folderName}': ${connectArray.join(", ")}`);
 
     return connectArray;
   }

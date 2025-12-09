@@ -26,7 +26,7 @@ export async function run(context: vscode.ExtensionContext): Promise<void> {
   // When one project, start it directly
   if (ddProjects.size === 1) {
     const [ddProjectConfig] = ddProjects.values();
-    await ddConfigs.startDataDigger(ddProjectConfig);
+    await ddConfigs.startDataDigger(ddProjectConfig, context);
     context.globalState.update("dd.lastProject", ddProjectConfig.projectName);
     return;
   }
@@ -67,5 +67,5 @@ export async function run(context: vscode.ExtensionContext): Promise<void> {
   }
   context.globalState.update("dd.lastProject", selection.label);
 
-  await ddConfigs.startDataDigger(chosenConfig);
+  await ddConfigs.startDataDigger(chosenConfig, context);
 }
