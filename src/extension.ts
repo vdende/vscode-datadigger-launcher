@@ -21,8 +21,8 @@ export async function activate(context: vscode.ExtensionContext) {
   let ddConfigs : DataDiggerConfig = await DataDiggerConfig.getInstance();
 
   const configListener = vscode.workspace.onDidChangeConfiguration(async e => {
-    // reset DataDiggerConfig when a Setting in scope of 'abl.datadigger.path' is changed
-    if (e.affectsConfiguration("abl.datadigger.path")) {
+    // reset DataDiggerConfig when all settings in scope of 'abl.datadigger.*' are changed
+    if (e.affectsConfiguration("abl.datadigger")) {
       Logger.info("Settings changed - reloading project configurations ...");
       ddConfigs.clear();
       ddConfigs = await DataDiggerConfig.getInstance();

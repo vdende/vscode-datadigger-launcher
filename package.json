@@ -28,6 +28,11 @@
           "description": "Path the local DataDigger instance",
           "scope": "resource"
         },
+        "abl.datadigger.extraParameters": {
+          "type": "string",
+          "default": "-nosplash",
+          "description": "Extra parameters when starting DataDigger"
+        },
         "abl.datadigger.debugLogging": {
           "type": "boolean",
           "default": false,

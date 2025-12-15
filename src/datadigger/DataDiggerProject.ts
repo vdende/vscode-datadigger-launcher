@@ -5,4 +5,5 @@ export interface DataDiggerProject {
   oeVersion: string;
   dbConnections: string[];
   dataDiggerPath: string | undefined;
+  extraParameters: string;
 }

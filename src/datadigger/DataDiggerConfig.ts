@@ -54,11 +54,13 @@ export class DataDiggerConfig {
         dlcHome: projectInfo.dlcHome,
         oeVersion: projectInfo.oeVersion,
         dbConnections: projectInfo.dbConnections,
-        dataDiggerPath: ""
+        dataDiggerPath: "",
+        extraParameters: ""
       };
 
       const projectUri         : vscode.Uri         = vscode.Uri.file(projectInfo.projectRoot);
       const relativeDiggerPath : string | undefined = this.getDiggerPathForProject(projectUri);
+      const extraParameters    : string | undefined = this.getExtraParametersForProject(projectUri);
       let diggerPath;
 
       if (relativeDiggerPath) {
@@ -90,7 +92,8 @@ export class DataDiggerConfig {
         continue;
       }
 
-      ddProject.dataDiggerPath = diggerPath;
+      ddProject.dataDiggerPath  = diggerPath;
+      ddProject.extraParameters = extraParameters || "";
       this.ddProjectConfigMap.set(projectName, ddProject);
     } // for loop
 
@@ -104,8 +107,8 @@ export class DataDiggerConfig {
    * @returns DataDigger path or undefined if not set
    */
   private getDiggerPathForProject(projectUri: vscode.Uri): string | undefined {
-    // First parameter 'section': undefined --> we don't want a section, we provide full-key in the config.get
-    // Second parameter 'scope' : projectUri ==> VSCode searches automatically
+    // First parameter 'section': undefined --> we don't want a section, we provide full-key in the config.get()
+    // Second parameter 'scope' : projectUri ==> VSCode searches automatically:
     //     ProjectFolder setting -> Workspace setting -> User setting
     const config = vscode.workspace.getConfiguration(undefined, projectUri);
     const value  = config.get<string>("abl.datadigger.path");
@@ -114,6 +117,22 @@ export class DataDiggerConfig {
     if (value === "") {
       return App.ctx.asAbsolutePath(path.join("resources", "DataDigger"));
     }
+
+    return value || undefined;
+  }
+
+  /**
+   * Retrieves the extra parameters to start DataDigger
+   *
+   * @param projectUri
+   * @returns Extra parameters from settings
+   */
+  private getExtraParametersForProject(projectUri: vscode.Uri): string | undefined {
+    // First parameter 'section': undefined --> we don't want a section, we provide full-key in the config.get()
+    // Second parameter 'scope' : projectUri ==> VSCode searches automatically:
+    //     ProjectFolder setting -> Workspace setting -> User setting
+    const config = vscode.workspace.getConfiguration(undefined, projectUri);
+    const value  = config.get<string>("abl.datadigger.extraParameters");
 
     return value || undefined;
   }
@@ -155,10 +174,10 @@ export class DataDiggerConfig {
     const args = [
       "-pf", `${config.dataDiggerPath}/DataDigger.pf`,
       ...config.dbConnections.flatMap(conn => conn.split(" ")),
-      "-nosplash",
       "-param", config.projectName,
       "-p", wrapper,
-      "-T", os.tmpdir()
+      "-T", os.tmpdir(),
+      ...App.parseArgs(config.extraParameters)
     ];
     Logger.debug(`Arguments: ${args}`)
 
