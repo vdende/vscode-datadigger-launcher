@@ -149,7 +149,6 @@ export class DataDiggerConfig {
     Logger.debug(`prowin: ${prowin}`);
     Logger.debug(`DataDiggerPath: ${config.dataDiggerPath}`);
 
-    const cfgFile = this.writeStartConfigJson(config);
     const wrapper = App.ctx.asAbsolutePath(path.join("resources", "ddwrapper.p"));
 
     // add DataDigger.pf first, and all following parameters will override the previous (if exists)
@@ -157,7 +156,7 @@ export class DataDiggerConfig {
       "-pf", `${config.dataDiggerPath}/DataDigger.pf`,
       ...config.dbConnections.flatMap(conn => conn.split(" ")),
       "-nosplash",
-      "-param", cfgFile,
+      "-param", config.projectName,
       "-p", wrapper,
       "-T", os.tmpdir()
     ];
@@ -172,29 +171,12 @@ export class DataDiggerConfig {
       stdio: "ignore",
       windowsHide: false,
       env: {
+        DD_PATH: config.dataDiggerPath,
         DD_WORKDIR: workPath
       }
     });
 
     child.unref();
-  }
-
-  /**
-   * Write a json file to be passed as parameter
-   *
-   * @param config
-   * @returns
-   */
-  private writeStartConfigJson(config: DataDiggerProject): string {
-    const configFile = path.join(os.tmpdir(), `abldd_${Date.now()}.json`);
-
-    const cfgJson = {
-      "dataDiggerPath": config.dataDiggerPath
-    };
-
-    fs.writeFileSync(configFile, JSON.stringify(cfgJson, null, 2), { encoding: "utf-8" });
-
-    return configFile;
   }
 
   /**

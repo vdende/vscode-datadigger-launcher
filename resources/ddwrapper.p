@@ -1,21 +1,16 @@
 block-level on error undo, throw.
 
-using Progress.Json.ObjectModel.JsonObject.
-using Progress.Json.ObjectModel.ObjectModelParser.
+define variable ddpath as character no-undo.
 
-define variable cfgFile as character         no-undo.
-define variable parser  as ObjectModelParser no-undo.
-define variable config  as JsonObject        no-undo.
+ddpath = os-getenv("DD_PATH").
 
-cfgFile = session:parameter.
-parser  = new ObjectModelParser().
-config  = cast(parser:ParseFile(cfgFile), JsonObject).
-os-delete value(cfgFile).
+file-info:file-name = ddpath.
+if file-info:file-type eq ? or not file-info:file-type matches "*D*" then do:
+  message substitute("ERROR: Unable to locate DataDigger path: &1", ddpath) view-as alert-box error.
+  quit.
+end.
 
-propath = substitute("&1,&2"
-                    ,config:GetCharacter("dataDiggerPath")
-                    ,propath).
-
+propath = substitute("&1,&2", ddpath, propath).
 run DataDigger.p.
 
 finally:
