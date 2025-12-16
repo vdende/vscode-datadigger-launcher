@@ -60,42 +60,16 @@ export class DataDiggerConfig {
       };
 
       const projectUri         : vscode.Uri         = vscode.Uri.file(projectInfo.projectRoot);
-      const relativeDiggerPath : string | undefined = this.getDiggerPathForProject(projectUri);
+      const relativeDiggerPath : string             = this.getDiggerPathForProject(projectUri);
       const extraParameters    : string | undefined = this.getExtraParametersForProject(projectUri);
+
+      const diggerPath = this.validateDataDiggerPath(relativeDiggerPath, projectName);
+      if (diggerPath === undefined) {
+        continue;
+      }
 
       if (vscode.workspace.getConfiguration(undefined, projectUri).get<boolean>("abl.datadigger.addProjectParameters")) {
         ddProject.projectParameters = projectInfo.projectParameters;
-      }
-
-      let diggerPath;
-
-      if (relativeDiggerPath) {
-        diggerPath = path.resolve(projectUri.fsPath, relativeDiggerPath);
-        if (fs.existsSync(diggerPath)) {
-          Logger.info(`DataDigger path for project '${projectName}': ${diggerPath}`);
-        } else {
-          Logger.warn(`DataDigger path for project '${projectName}': ${diggerPath} --> not found`);
-        }
-      } else {
-        Logger.warn(`DataDigger path for project '${projectName}': ${diggerPath} --> not found`);
-      }
-
-      // datadigger path path must be set
-      if (!diggerPath) {
-        vscode.window.showWarningMessage(
-          `No valid DataDigger path found for project '${projectName}'. ` +
-          `Please set the path in the settings.`
-        );
-        continue;
-      }
-
-      // datadigger path must exist
-      if (!fs.existsSync(diggerPath)) {
-        vscode.window.showWarningMessage(
-          `The configured DataDigger path '${diggerPath}' for project '${projectName}' does not exist. ` +
-          `Please check the path in the settings.`
-        );
-        continue;
       }
 
       ddProject.dataDiggerPath  = diggerPath;
@@ -112,7 +86,7 @@ export class DataDiggerConfig {
    * @param projectUri
    * @returns DataDigger path or undefined if not set
    */
-  private getDiggerPathForProject(projectUri: vscode.Uri): string | undefined {
+  private getDiggerPathForProject(projectUri: vscode.Uri): string {
     // First parameter 'section': undefined --> we don't want a section, we provide full-key in the config.get()
     // Second parameter 'scope' : projectUri ==> VSCode searches automatically:
     //     ProjectFolder setting -> Workspace setting -> User setting
@@ -120,11 +94,69 @@ export class DataDiggerConfig {
     const value  = config.get<string>("abl.datadigger.path");
 
     // only when the value is empty, we'll use the DataDigger in the box
-    if (value === "") {
+    if (!value || value === "") {
       return App.ctx.asAbsolutePath(path.join("resources", "DataDigger"));
     }
 
-    return value || undefined;
+    return value;
+  }
+
+  /**
+   * Validates the DataDigger path from Settings (path can be relative or absolute)
+   *
+   * @param ddPath (can be realtive or absolute)
+   * @returns Absolute path
+   */
+  private validateDataDiggerPath(ddPath: string | undefined, projectName: string): string | undefined {
+
+    const inputPath = ddPath;
+
+    if (!ddPath || ddPath.trim() === "") {
+      Logger.warn(`DataDigger path for project '${projectName}': ${ddPath} --> not found`);
+      vscode.window.showWarningMessage(
+        `No valid DataDigger path found for project '${projectName}'. ` +
+        `Please set the path in the settings.`
+      );
+      return undefined;
+    }
+
+    if (!path.isAbsolute(ddPath)) {
+      const ws = vscode.workspace.workspaceFolders?.[0];
+      if (!ws) {
+        throw new Error("No workspace is open!");
+      }
+      ddPath = path.resolve(ws.uri.fsPath, ddPath);
+    }
+
+    if (!fs.existsSync(ddPath)) {
+      Logger.warn(`DataDigger path for project '${projectName}': ${inputPath} --> not found`);
+      vscode.window.showWarningMessage(
+        `No valid DataDigger path found for project '${projectName}'. ` +
+        `Please set the path in the settings.`
+      );
+      return undefined;
+    }
+
+    const stat = fs.statSync(ddPath);
+    if (!stat.isDirectory()) {
+      Logger.error(`DataDigger path for project '${projectName}': ${inputPath} --> not a directory`);
+      vscode.window.showErrorMessage(
+        `DataDigger path for project '${projectName}' must be a directory. ` +
+        `Please set the path in the settings.`
+      );
+      return undefined;
+    }
+
+    if (!fs.existsSync(path.join(ddPath, "DataDigger.pf"))) {
+      Logger.error(`DataDigger path for project '${projectName}': ${inputPath} --> DataDigger.pf not found`);
+      vscode.window.showErrorMessage(
+        `DataDigger path for project '${projectName}' does not contain 'DataDigger.pf'. ` +
+        `Please set the path in the settings.`
+      );
+      return undefined;
+    }
+
+    return ddPath;
   }
 
   /**

@@ -13,6 +13,9 @@ export async function activate(context: vscode.ExtensionContext) {
   // first set the context to use globally
   App.init(context);
 
+  // load logger
+  Logger.reloadConfiguration();
+
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   Logger.info("Starting ABL DataDigger extension ...");

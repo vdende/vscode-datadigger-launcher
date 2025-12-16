@@ -25,7 +25,7 @@
         "abl.datadigger.path": {
           "type": "string",
           "default": "",
-          "description": "Path of the local DataDigger instance",
+          "description": "Path of the local DataDigger instance (can be relative based on the workspace root)\nOptional: when empty, the bundled DataDigger instance will be used",
           "scope": "resource",
           "order": 1
         },
@@ -47,7 +47,7 @@
           "type": "boolean",
           "default": false,
           "description": "Enable debug logging",
-          "scope": "resource",
+          "scope": "application",
           "order": 4
         }
       }
