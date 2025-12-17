@@ -68,7 +68,7 @@ export class DataDiggerConfig {
         continue;
       }
 
-      if (vscode.workspace.getConfiguration(undefined, projectUri).get<boolean>("abl.datadigger.addProjectParameters")) {
+      if (vscode.workspace.getConfiguration(undefined, projectUri).get<boolean>("abl.datadiggerLauncher.addProjectParameters")) {
         ddProject.projectParameters = projectInfo.projectParameters;
       }
 
@@ -91,7 +91,7 @@ export class DataDiggerConfig {
     // Second parameter 'scope' : projectUri ==> VSCode searches automatically:
     //     ProjectFolder setting -> Workspace setting -> User setting
     const config = vscode.workspace.getConfiguration(undefined, projectUri);
-    const value  = config.get<string>("abl.datadigger.path");
+    const value  = config.get<string>("abl.datadiggerLauncher.path");
 
     // only when the value is empty, we'll use the DataDigger in the box
     if (!value || value === "") {
@@ -172,7 +172,7 @@ export class DataDiggerConfig {
     // Second parameter 'scope' : projectUri ==> VSCode searches automatically:
     //     ProjectFolder setting -> Workspace setting -> User setting
     const config = vscode.workspace.getConfiguration(undefined, projectUri);
-    const value  = config.get<string>("abl.datadigger.extraParameters");
+    const value  = config.get<string>("abl.datadiggerLauncher.extraParameters");
 
     return value || undefined;
   }

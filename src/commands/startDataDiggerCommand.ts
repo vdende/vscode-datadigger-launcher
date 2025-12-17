@@ -16,12 +16,12 @@ export async function run(): Promise<void> {
   const ddProjects : Map<string, DataDiggerProject> = ddConfigs.getDataDiggerProjects();
   // console.log("[abl-datadigger] Number of DataDigger projects: " + ddProjects.size );
   // for (const [key, value] of ddProjects.entries()) {
-  //   console.log(`[abl-datadigger] - ${key}: ${JSON.stringify(value)}`);
+  //   console.log(`[abl-datadigger-launcher] - ${key}: ${JSON.stringify(value)}`);
   // }
 
   if (ddProjects.size === 0) {
-    Logger.warn("ABL DataDigger: There are no DataDigger projects configured!");
-    vscode.window.showWarningMessage("ABL DataDigger: There are no DataDigger projects configured!");
+    Logger.warn("ABL DataDigger Launcher: There are no DataDigger projects configured!");
+    vscode.window.showWarningMessage("ABL DataDigger Launcher: There are no DataDigger projects configured!");
     return;
   }
 
@@ -54,7 +54,7 @@ export async function run(): Promise<void> {
   }
 
   const selection = await vscode.window.showQuickPick(items, {
-    placeHolder: "Pick the OpenEdge project for ABL DataDigger"
+    placeHolder: "Pick the OpenEdge project for ABL DataDigger Launcher"
   });
 
   if (!selection) {
@@ -64,8 +64,8 @@ export async function run(): Promise<void> {
 
   const chosenConfig = ddProjects.get(selection.label);
   if (!chosenConfig) {
-    Logger.error(`ABL DataDigger: configuration for project '${selection.label}' is not found!`);
-    vscode.window.showErrorMessage(`ABL DataDigger: configuration for project '${selection.label}' is not found!`);
+    Logger.error(`ABL DataDigger Launcher: configuration for project '${selection.label}' is not found!`);
+    vscode.window.showErrorMessage(`ABL DataDigger Launcher: configuration for project '${selection.label}' is not found!`);
     return;
   }
    App.ctx.globalState.update("dd.lastProject", selection.label);

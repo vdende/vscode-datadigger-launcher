@@ -1,8 +1,8 @@
 {
   "name": "abl-datadigger",
   "publisher": "vdende",
-  "displayName": "ABL DataDigger",
-  "description": "OpenEdge ABL DataDigger for VS Code",
+  "displayName": "ABL DataDigger Launcher",
+  "description": "OpenEdge ABL DataDigger Launcher for VS Code",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.106.1"
@@ -20,30 +20,30 @@
   "contributes": {
     "configuration": {
       "type": "object",
-      "title": "ABL DataDigger",
+      "title": "ABL DataDigger Launcher",
       "properties": {
-        "abl.datadigger.path": {
+        "abl.datadiggerLauncher.path": {
           "type": "string",
           "default": "",
           "description": "Path of the local DataDigger instance (can be relative based on the workspace root)\nOptional: when empty, the bundled DataDigger instance will be used",
           "scope": "resource",
           "order": 1
         },
-        "abl.datadigger.addProjectParameters": {
+        "abl.datadiggerLauncher.addProjectParameters": {
           "type": "boolean",
           "default": false,
-          "description": "Add the OpenEdge project client parameters when starting DataDigger",
+          "description": "Add the OpenEdge project client parameters when starting DataDigger\nNote: a restart of VS Code and/or the OpenEdge Language Server is required for this to take effect. This also applies when changing the client parameters in openedge-project.json",
           "scope": "resource",
           "order": 2
         },
-        "abl.datadigger.extraParameters": {
+        "abl.datadiggerLauncher.extraParameters": {
           "type": "string",
           "default": "-nosplash",
           "description": "Extra parameters when starting DataDigger",
           "scope": "resource",
           "order": 3
         },
-        "abl.datadigger.debugLogging": {
+        "abl.datadiggerLauncher.debugLogging": {
           "type": "boolean",
           "default": false,
           "description": "Enable debug logging",
@@ -54,15 +54,15 @@
     },
     "commands": [
       {
-        "command": "abl-datadigger.start",
-        "title": "Start",
+        "command": "abl-datadigger.launch",
+        "title": "Launch",
         "category": "ABL DataDigger"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "abl-datadigger.start",
+          "command": "abl-datadigger.launch",
           "when": "true"
         }
       ]

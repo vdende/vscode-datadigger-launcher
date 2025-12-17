@@ -2,14 +2,14 @@ import * as vscode from "vscode";
 
 export class Logger {
 
-  private static channel = vscode.window.createOutputChannel("ABL DataDigger");
+  private static channel = vscode.window.createOutputChannel("ABL DataDigger Launcher");
   private static showDebug: boolean = false;
 
   /**
    * Reload configuration (when settings are changed)
    */
   static reloadConfiguration() {
-    const config = vscode.workspace.getConfiguration("abl.datadigger");
+    const config = vscode.workspace.getConfiguration("abl.datadiggerLauncher");
     this.showDebug = config.get<boolean>("debugLogging", false);
     this.info(`Debug logging is now ${this.showDebug ? "ENABLED" : "DISABLED"}`);
   }
@@ -35,7 +35,7 @@ export class Logger {
    * @param message
    */
   static info(message: string) {
-    console.log(`[abl-datadigger] [info] ${message}`);
+    console.log(`[abl-datadigger-launcher] [info] ${message}`);
     this.write("info", "ℹ️", message);
   }
 
@@ -45,7 +45,7 @@ export class Logger {
    * @param message
    */
   static warn(message: string) {
-    console.log(`[abl-datadigger] [warn] ${message}`);
+    console.log(`[abl-datadigger-launcher] [warn] ${message}`);
     this.write("warn", "⚠️", message);
   }
 
@@ -54,7 +54,7 @@ export class Logger {
    * @param message
    */
   static error(message: string) {
-    console.log(`[abl-datadigger] [error] ${message}`);
+    console.log(`[abl-datadigger-launcher] [error] ${message}`);
     this.write("error", "❌", message);
   }
 
@@ -63,7 +63,7 @@ export class Logger {
    * @param message
    */
   static debug(message: string) {
-    console.log(`[abl-datadigger] [debug] ${message}`);
+    console.log(`[abl-datadigger-launcher] [debug] ${message}`);
     if (!this.showDebug) return;
     this.write("debug", "🐞", message);
   }
