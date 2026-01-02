@@ -3,6 +3,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { ProjectInfo } from "./ProjectInfo";
 import { Logger } from "../util/Logger";
+import json_minify from 'node-json-minify'
 
 export class OpenEdgeAblExtensionService {
 
@@ -136,7 +137,8 @@ export class OpenEdgeAblExtensionService {
 
     // read file
     const jsonRaw  = fs.readFileSync(oeProjectJsonPath, "utf8");
-    const jsonData = JSON.parse(jsonRaw);
+    const stripped = json_minify(jsonRaw);
+    const jsonData = JSON.parse(stripped);
 
     return jsonData;
   }
