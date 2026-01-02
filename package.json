@@ -3,7 +3,7 @@
   "publisher": "vdende",
   "displayName": "ABL DataDigger Launcher",
   "description": "OpenEdge ABL DataDigger Launcher for VS Code (Windows only)",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "engines": {
     "vscode": "^1.90.0"
   },

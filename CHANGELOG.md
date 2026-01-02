@@ -1,3 +1,8 @@
+## Version 1.0.4 - 2026-01-02
+- No check on `workPath` for custom DataDigger location
+- Ignore comments in `openedge-project.json`
+- Use `esbuild`
+
 ## Version 1.0.3 - 2025-12-31
 - Improved error handling
 

@@ -1,13 +1,10 @@
 .vscode/**
-.vscode-test/**
 src/**
 .gitignore
-.yarnrc
 vsc-extension-quickstart.md
 **/tsconfig.json
 **/eslint.config.mjs
 **/*.ts
-**/.vscode-test.*
 vscode-datadigger.code-workspace
 node_modules/
 *.vsix
