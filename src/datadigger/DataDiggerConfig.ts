@@ -95,7 +95,7 @@ export class DataDiggerConfig {
 
     // only when the value is empty, we'll use the DataDigger in the box
     if (!value || value === "") {
-      return App.ctx.asAbsolutePath(path.join("resources", "DataDigger"));
+      return App.BundledDataDiggerPath();
     }
 
     return value;
@@ -297,9 +297,9 @@ export class DataDiggerConfig {
    * @returns path
    */
   private prepareUserWorkPath(config: DataDiggerProject): string {
-    // we don't need a workdir when the user has set it to its custom DD-dir
-    if (config.dataDiggerPath !== App.ctx.asAbsolutePath(path.join("resources", "DataDigger"))) {
-      return "";
+    // when a custom DD-dir is set, use that as the workPath
+    if (config.dataDiggerPath !== App.BundledDataDiggerPath()) {
+      return config.dataDiggerPath || "";
     }
 
     const base     = process.env.LOCALAPPDATA || path.join(os.homedir(), "AppData", "Local");

@@ -80,7 +80,7 @@ export async function run(): Promise<void> {
  * @returns Description
  */
 function getQuickPickDescription(ddProjectConfig: DataDiggerProject): string {
-  const defaultDDPath = App.ctx.asAbsolutePath(path.join("resources", "DataDigger"));
+  const defaultDDPath = App.BundledDataDiggerPath();
 
   if (defaultDDPath === ddProjectConfig.dataDiggerPath) {
     return "";

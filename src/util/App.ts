@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as path from "path";
 
 export class App {
 
@@ -50,6 +51,15 @@ export class App {
       }
       return arg;
     });
-}
+  }
+
+  /**
+   * Get the full path of the bundled DataDigger path
+   *
+   * @returns DataDigger full path
+   */
+  public static BundledDataDiggerPath(): string {
+    return App.ctx.asAbsolutePath(path.join("resources", "DataDigger"));
+  }
 
 }

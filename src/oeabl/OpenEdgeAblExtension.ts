@@ -3,7 +3,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { ProjectInfo } from "./ProjectInfo";
 import { Logger } from "../util/Logger";
-import json_minify from 'node-json-minify'
+import json_minify from "node-json-minify";
 
 export class OpenEdgeAblExtensionService {
 
