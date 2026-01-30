@@ -10,7 +10,6 @@ import { App } from "./util/App";
  * @param context
  */
 export async function activate(context: vscode.ExtensionContext) {
-
   await vscode.commands.executeCommand("setContext", "datadiggerReady", false);
 
   // Check platform
@@ -30,7 +29,7 @@ export async function activate(context: vscode.ExtensionContext) {
   Logger.info("Starting ABL DataDigger Launcher extension ...");
 
   // first read OE Projects and DataDigger projects, to handle the checks
-  let ddConfigs : DataDiggerConfig = await DataDiggerConfig.getInstance();
+  let ddConfigs: DataDiggerConfig = await DataDiggerConfig.getInstance();
 
   const configListener = vscode.workspace.onDidChangeConfiguration(async e => {
     // reset DataDiggerConfig when all settings in scope of 'abl.datadigger.*' are changed
@@ -55,6 +54,14 @@ export async function activate(context: vscode.ExtensionContext) {
   await vscode.commands.executeCommand("setContext", "datadiggerReady", true);
 
   Logger.info("ABL DataDigger Launcher extension started");
+  const numProjects: number = ddConfigs.getNumberOfProjects();
+  await vscode.commands.executeCommand("setContext", "datadiggerReady", numProjects > 0);
+
+  if (numProjects === 0) {
+    Logger.warn("ABL DataDigger Launcher extension started, but no OpenEdge projects found to launch DataDigger for");
+  } else {
+    Logger.info(`ABL DataDigger Launcher extension started (${numProjects} projects)`);
+  }
 }
 
 // This method is called when your extension is deactivated

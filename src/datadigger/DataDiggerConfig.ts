@@ -36,6 +36,15 @@ export class DataDiggerConfig {
   }
 
   /**
+   * Gets the number of DataDigger projects configured
+   *
+   * @returns number of projects
+   */
+  public getNumberOfProjects(): number {
+    return this.ddProjectConfigMap.size;
+  }
+
+  /**
    * Initializes the DataDigger Config
    */
   private async initialize() {
