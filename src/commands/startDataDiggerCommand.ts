@@ -20,8 +20,8 @@ export async function run(): Promise<void> {
   // }
 
   if (ddProjects.size === 0) {
-    Logger.warn("ABL DataDigger Launcher: There are no DataDigger projects configured!");
-    vscode.window.showWarningMessage("ABL DataDigger Launcher: There are no DataDigger projects configured!");
+    Logger.warn("ABL DataDigger Launcher: There is no DataDigger project configured");
+    vscode.window.showWarningMessage("ABL DataDigger Launcher: There is no DataDigger project configured");
     return;
   }
 

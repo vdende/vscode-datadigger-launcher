@@ -2,13 +2,13 @@ import * as vscode from "vscode";
 
 export class Logger {
 
-  private static channel = vscode.window.createOutputChannel("ABL DataDigger Launcher");
+  private static channel: vscode.OutputChannel = vscode.window.createOutputChannel("ABL DataDigger Launcher");
   private static showDebug: boolean = false;
 
   /**
    * Reload configuration (when settings are changed)
    */
-  static reloadConfiguration() {
+  public static reloadConfiguration() {
     const config = vscode.workspace.getConfiguration("abl.datadiggerLauncher");
     this.showDebug = config.get<boolean>("debugLogging", false);
     this.info(`Debug logging is now ${this.showDebug ? "ENABLED" : "DISABLED"}`);
@@ -23,10 +23,6 @@ export class Logger {
   private static write(level: string, icon: string, message: string) {
     const timestamp = new Date().toISOString();
     this.channel.appendLine(`${timestamp} ${icon} [${level}] ${message}`);
-
-    if (level === "error") {
-      this.channel.show(true);
-    }
   }
 
   /**
@@ -34,8 +30,7 @@ export class Logger {
    *
    * @param message
    */
-  static info(message: string) {
-    console.log(`[abl-datadigger-launcher] [info] ${message}`);
+  public static info(message: string) {
     this.write("info", "ℹ️", message);
   }
 
@@ -44,8 +39,7 @@ export class Logger {
    *
    * @param message
    */
-  static warn(message: string) {
-    console.log(`[abl-datadigger-launcher] [warn] ${message}`);
+  public static warn(message: string) {
     this.write("warn", "⚠️", message);
   }
 
@@ -53,25 +47,17 @@ export class Logger {
    * Error message
    * @param message
    */
-  static error(message: string) {
-    console.log(`[abl-datadigger-launcher] [error] ${message}`);
+  public static error(message: string) {
     this.write("error", "❌", message);
+    this.channel.show(true);
   }
 
   /**
    * Debug message
    * @param message
    */
-  static debug(message: string) {
-    console.log(`[abl-datadigger-launcher] [debug] ${message}`);
-    if (!this.showDebug) return;
+  public static debug(message: string) {
+    if (!this.showDebug) { return; }
     this.write("debug", "🐞", message);
-  }
-
-  /**
-   * Show the log view
-   */
-  static show() {
-    this.channel.show(true);
   }
 }

@@ -77,8 +77,7 @@ export class OpenEdgeAblExtensionService {
     });
 
     if (!openEdgeFolders?.length) {
-      Logger.warn("There are no OpenEdge projects configured!");
-      vscode.window.showWarningMessage("ABL DataDigger Launcher: There are no OpenEdge projects configured!");
+      Logger.warn("There is no OpenEdge project configured");
       return;
     }
 
@@ -93,7 +92,6 @@ export class OpenEdgeAblExtensionService {
         info = (await this.api.getProjectInfo(folderString)) as ProjectInfo;
       } catch (err) {
         Logger.error("Error while executing getProjectInfo: " + err);
-        console.error("[abl-datadigger] Error while executing getProjectInfo:", err);
         continue;
       }
 
