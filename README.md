@@ -19,6 +19,8 @@ Via the Command Palette (`Ctrl+Shift+P`), DataDigger can be launched using the c
 
 If multiple OpenEdge projects are detected, you will be prompted to select the project to use.
 
+It is also possible to start DataDigger for a specific OpenEdge project from the context menu in the Explorer view.
+
 ![Launch DataDigger](resources/images/launch.png)
 
 ## Settings

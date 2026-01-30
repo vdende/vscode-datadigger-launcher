@@ -14,7 +14,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Check platform
   if (process.platform !== "win32") {
-    void vscode.window.showErrorMessage(`ABL DataDigger Launcher is Windows-only and cannot run on '${process.platform}'. Please uninstall this extension`);
+    void vscode.window.showErrorMessage(`ABL DataDigger Launcher is for Windows only and cannot run on '${process.platform}'. Please uninstall this extension`);
     return;
   }
 
@@ -50,7 +50,7 @@ export async function activate(context: vscode.ExtensionContext) {
     await startDataDigger.run();
   });
   App.ctx.subscriptions.push(launchCommand);
-  const launchFromExplorerCommand = vscode.commands.registerCommand("abl-datadigger.launch-for-project", async (fileUri: vscode.Uri) => {
+  const launchFromExplorerCommand = vscode.commands.registerCommand("abl-datadigger.launchForProject", async (fileUri: vscode.Uri) => {
     await startDataDigger.run(fileUri);
   });
   App.ctx.subscriptions.push(launchFromExplorerCommand);
