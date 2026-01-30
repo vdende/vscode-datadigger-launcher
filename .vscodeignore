@@ -9,3 +9,4 @@ vscode-datadigger.code-workspace
 node_modules/
 *.vsix
 esbuild.js
+publish.bat
