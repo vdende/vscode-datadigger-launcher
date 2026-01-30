@@ -45,15 +45,16 @@ export async function activate(context: vscode.ExtensionContext) {
   });
   App.ctx.subscriptions.push(configListener);
 
-  // register start command
-  const startCommand = vscode.commands.registerCommand("abl-datadigger.launch", async () => {
+  // register launch commandos
+  const launchCommand = vscode.commands.registerCommand("abl-datadigger.launch", async () => {
     await startDataDigger.run();
   });
-  App.ctx.subscriptions.push(startCommand);
+  App.ctx.subscriptions.push(launchCommand);
+  const launchFromExplorerCommand = vscode.commands.registerCommand("abl-datadigger.launch-for-project", async (fileUri: vscode.Uri) => {
+    await startDataDigger.run(fileUri);
+  });
+  App.ctx.subscriptions.push(launchFromExplorerCommand);
 
-  await vscode.commands.executeCommand("setContext", "datadiggerReady", true);
-
-  Logger.info("ABL DataDigger Launcher extension started");
   const numProjects: number = ddConfigs.getNumberOfProjects();
   await vscode.commands.executeCommand("setContext", "datadiggerReady", numProjects > 0);
 

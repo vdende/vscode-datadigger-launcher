@@ -62,6 +62,11 @@
         "command": "abl-datadigger.launch",
         "title": "Launch",
         "category": "ABL DataDigger"
+      },
+      {
+        "command": "abl-datadigger.launch-for-project",
+        "title": "Launch ABL DataDigger",
+        "icon": "$(database)"
       }
     ],
     "menus": {
@@ -69,6 +74,17 @@
         {
           "command": "abl-datadigger.launch",
           "when": "datadiggerReady"
+        },
+        {
+          "command": "abl-datadigger.launch-for-project",
+          "when": "false"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "abl-datadigger.launch-for-project",
+          "when": "resourceScheme == 'file' && datadiggerReady",
+          "group": "abl-datadigger-context-group"
         }
       ]
     }

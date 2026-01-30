@@ -10,7 +10,7 @@ import { App } from "../util/App";
  *
  * @returns
  */
-export async function run(): Promise<void> {
+export async function run(uri?: vscode.Uri): Promise<void> {
 
   const ddConfigs  : DataDiggerConfig               = await DataDiggerConfig.getInstance();
   const ddProjects : Map<string, DataDiggerProject> = ddConfigs.getDataDiggerProjects();
@@ -31,6 +31,25 @@ export async function run(): Promise<void> {
     await ddConfigs.startDataDigger(ddProjectConfig);
     App.ctx.globalState.update("dd.lastProject", ddProjectConfig.projectKey);
     return;
+  }
+
+  // When uri is given (selected from explorer), try to find the matching project directly
+  if (uri) {
+    const fsPath = uri.fsPath;
+    // only when fsPath is a valid uri, we try to launch directly and if not found give a warning
+    // but when the user clicked in the explorer menu and no file was selected, the quick-pick will be shown
+    if (fsPath) {
+      for (const ddProjectConfig of ddProjects.values()) {
+        if (fsPath.startsWith(ddProjectConfig.projectDir)) {
+          await ddConfigs.startDataDigger(ddProjectConfig);
+          App.ctx.globalState.update("dd.lastProject", ddProjectConfig.projectKey);
+          return;
+        }
+      }
+      Logger.warn(`ABL DataDigger Launcher: No matching DataDigger project found for path '${fsPath}'`);
+      vscode.window.showWarningMessage(`Cannot launch ABL DataDigger, because selected resource is not part of an OpenEdge project or does not have any database connections`);
+      return;
+    }
   }
 
   // More projects -> show QuickPick (sort by lastUsed)

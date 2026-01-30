@@ -1,4 +1,5 @@
 ## Version 1.1.0 - tbd
+- Launch DataDigger from Explorer context menu
 - Commands visible/active when extension is loaded
 - Show OpenEdge project name instead of folder name
 - Small improvements
