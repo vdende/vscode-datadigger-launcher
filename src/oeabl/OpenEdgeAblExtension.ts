@@ -3,7 +3,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { ProjectInfo } from "./ProjectInfo";
 import { Logger } from "../util/Logger";
-import json_minify from "node-json-minify";
+import jsonMinify from "node-json-minify";
 
 export class OpenEdgeAblExtensionService {
 
@@ -26,7 +26,7 @@ export class OpenEdgeAblExtensionService {
    *
    * @returns OpenEdgeAblExtensionService
    */
-  static async getInstance(): Promise<OpenEdgeAblExtensionService> {
+  public static async getInstance(): Promise<OpenEdgeAblExtensionService> {
     if (!OpenEdgeAblExtensionService.instance) {
       OpenEdgeAblExtensionService.instance = new OpenEdgeAblExtensionService();
       await OpenEdgeAblExtensionService.instance.waitUntilReady();
@@ -63,7 +63,7 @@ export class OpenEdgeAblExtensionService {
    * Load project infos for all workspace folders
    */
   private async loadProjectInfos(): Promise<void> {
-    if (!this.api) return;
+    if (!this.api) { return; }
 
     const folders = vscode.workspace.workspaceFolders;
     if (!folders?.length) {
@@ -146,7 +146,7 @@ export class OpenEdgeAblExtensionService {
 
     // read file
     const jsonRaw  = fs.readFileSync(oeProjectJsonPath, "utf8");
-    const stripped = json_minify(jsonRaw);
+    const stripped = jsonMinify(jsonRaw);
     const jsonData = JSON.parse(stripped);
 
     return jsonData;
@@ -161,11 +161,11 @@ export class OpenEdgeAblExtensionService {
   private getDbConnections(oeProjectJsonData: any, folderName: string): string[] {
 
     const connectArray = (oeProjectJsonData.dbConnections ?? [])
-      .map((c: any) => c?.connect)
-      .filter((x: any): x is string => typeof x === 'string');
+      .map((c: any) => c?.connect?.trim())
+      .filter((x: any): x is string => typeof x === "string");
 
     //Logger.debug(JSON.stringify(oeProjectJsonData, null, 2));
-    Logger.debug(`DB connections for project '${folderName}': ${connectArray.join(", ")}`);
+    Logger.debug(`DB connections for project '${folderName}': ${connectArray.join(",")}`);
 
     return connectArray;
   }
@@ -186,7 +186,7 @@ export class OpenEdgeAblExtensionService {
    * @returns ProjectInfos
    */
   public async getProjectInfos(): Promise<Map<string, ProjectInfo>> {
-    return this.projectInfoMap
+    return this.projectInfoMap;
   }
 
   /**

@@ -1,3 +1,6 @@
+## Version 1.1.0 - tbd
+- Small improvements
+
 ## Version 1.0.5 - 2026-01-30
 - Check on Windows-only
 
