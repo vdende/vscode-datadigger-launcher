@@ -10,7 +10,7 @@ import { App } from "../util/App";
  *
  * @returns
  */
-export async function run(uri?: vscode.Uri): Promise<void> {
+export async function run(defaultOrUri?: string | vscode.Uri): Promise<void> {
 
   const ddConfigs  : DataDiggerConfig               = await DataDiggerConfig.getInstance();
   const ddProjects : Map<string, DataDiggerProject> = ddConfigs.getDataDiggerProjects();
@@ -25,6 +25,27 @@ export async function run(uri?: vscode.Uri): Promise<void> {
     return;
   }
 
+  // When there are more projects and 'default' is requested, try to find it
+  if (defaultOrUri && typeof defaultOrUri === "string" && defaultOrUri === "default") {
+    const defaultProjectName: string | undefined = vscode.workspace.getConfiguration("abl").get("defaultProject"); // OpenEdge stores project names
+    if (defaultProjectName) {
+      const defaultProjectConfig: DataDiggerProject | undefined = ddConfigs.getProjectForName(defaultProjectName);
+      if (defaultProjectConfig) {
+        await ddConfigs.startDataDigger(defaultProjectConfig);
+        App.ctx.globalState.update("dd.lastProject", defaultProjectConfig.projectKey);
+        return;
+      } else {
+        Logger.warn(`ABL DataDigger Launcher: Default OpenEdge project '${defaultProjectName}' not found among configured DataDigger projects`);
+        vscode.window.showWarningMessage(`Default OpenEdge project '${defaultProjectName}' not found among configured DataDigger projects`);
+        return;
+      }
+    } else {
+      Logger.warn("ABL DataDigger Launcher: No default OpenEdge project configured");
+      vscode.window.showWarningMessage("There is no default OpenEdge project set");
+      return;
+    }
+  }
+
   // When one project, start it directly
   if (ddProjects.size === 1) {
     const [ddProjectConfig] = ddProjects.values();
@@ -34,8 +55,8 @@ export async function run(uri?: vscode.Uri): Promise<void> {
   }
 
   // When uri is given (selected from explorer), try to find the matching project directly
-  if (uri) {
-    const fsPath = uri.fsPath;
+  if (defaultOrUri && typeof defaultOrUri !== "string") {
+    const fsPath = defaultOrUri.fsPath;
     // only when fsPath is a valid uri, we try to launch directly and if not found give a warning
     // but when the user clicked in the explorer menu and no file was selected, the quick-pick will be shown
     if (fsPath) {
@@ -51,6 +72,8 @@ export async function run(uri?: vscode.Uri): Promise<void> {
       return;
     }
   }
+
+
 
   // More projects -> show QuickPick (sort by lastUsed)
   const lastUsedProject = App.ctx.globalState.get<string>("dd.lastProject");

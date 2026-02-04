@@ -1,5 +1,6 @@
 ## Version 1.1.0 - tbd
 - Launch DataDigger from Explorer context menu
+- New Command Palette command: **Launch DataDigger (default project)**, when an OpenEdge default project is set
 - Commands visible/active when extension is loaded
 - Show OpenEdge project name instead of folder name
 - Small improvements

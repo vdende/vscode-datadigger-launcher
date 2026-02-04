@@ -11,6 +11,7 @@ import { App } from "./util/App";
  */
 export async function activate(context: vscode.ExtensionContext) {
   await vscode.commands.executeCommand("setContext", "datadiggerReady", false);
+  await vscode.commands.executeCommand("setContext", "hasDefaultProject", false);
 
   // Check platform
   if (process.platform !== "win32") {
@@ -42,21 +43,30 @@ export async function activate(context: vscode.ExtensionContext) {
       Logger.info("Settings changed - reload debug logging level");
       Logger.reloadConfiguration();
     }
+    if (e.affectsConfiguration("abl.defaultProject")) {
+      const defaultProject: string | undefined = vscode.workspace.getConfiguration("abl").get("defaultProject");
+      await vscode.commands.executeCommand("setContext", "hasDefaultProject", !!(defaultProject));
+    }
   });
   App.ctx.subscriptions.push(configListener);
 
   // register launch commandos
-  const launchCommand = vscode.commands.registerCommand("abl-datadigger.launch", async () => {
+  App.ctx.subscriptions.push(vscode.commands.registerCommand("abl-datadigger.launch", async () => {
     await startDataDigger.run();
-  });
-  App.ctx.subscriptions.push(launchCommand);
-  const launchFromExplorerCommand = vscode.commands.registerCommand("abl-datadigger.launchForProject", async (fileUri: vscode.Uri) => {
+  }));
+  App.ctx.subscriptions.push(vscode.commands.registerCommand("abl-datadigger.launchForProject", async (fileUri: vscode.Uri) => {
     await startDataDigger.run(fileUri);
-  });
-  App.ctx.subscriptions.push(launchFromExplorerCommand);
+  }));
+  App.ctx.subscriptions.push(vscode.commands.registerCommand("abl-datadigger.launchForDefaultProject", async () => {
+    await startDataDigger.run("default");
+  }));
 
   const numProjects: number = ddConfigs.getNumberOfProjects();
   await vscode.commands.executeCommand("setContext", "datadiggerReady", numProjects > 0);
+
+  // Set hasDefaultProject when there's a default project configured and more than 1 project
+  const defaultProject: string | undefined = vscode.workspace.getConfiguration("abl").get("defaultProject");
+  await vscode.commands.executeCommand("setContext", "hasDefaultProject", !!(defaultProject));
 
   if (numProjects === 0) {
     Logger.warn("ABL DataDigger Launcher extension started, but no OpenEdge projects found to launch DataDigger for");

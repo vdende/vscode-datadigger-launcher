@@ -207,6 +207,21 @@ export class DataDiggerConfig {
   }
 
   /**
+   * Gets a DataDigger project by its project name
+   *
+   * @param projectName The name of the project
+   * @returns DataDigger project config or undefined if not found
+   */
+  public getProjectForName(projectName: string): DataDiggerProject | undefined {
+    for (const ddProject of this.ddProjectConfigMap.values()) {
+      if (ddProject.projectName === projectName) {
+        return ddProject;
+      }
+    }
+    return undefined;
+  }
+
+  /**
    * Start DataDigger for project
    *
    * @param config DataDiggerProject object

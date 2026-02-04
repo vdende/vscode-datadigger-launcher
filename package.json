@@ -67,6 +67,11 @@
         "command": "abl-datadigger.launchForProject",
         "title": "Launch ABL DataDigger",
         "icon": "$(database)"
+      },
+      {
+        "command": "abl-datadigger.launchForDefaultProject",
+        "title": "Launch (default project)",
+        "category": "ABL DataDigger"
       }
     ],
     "menus": {
@@ -74,6 +79,10 @@
         {
           "command": "abl-datadigger.launch",
           "when": "datadiggerReady"
+        },
+        {
+          "command": "abl-datadigger.launchForDefaultProject",
+          "when": "datadiggerReady && hasDefaultProject"
         },
         {
           "command": "abl-datadigger.launchForProject",

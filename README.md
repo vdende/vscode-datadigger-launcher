@@ -21,6 +21,8 @@ If multiple OpenEdge projects are detected, you will be prompted to select the p
 
 It is also possible to start DataDigger for a specific OpenEdge project from the context menu in the Explorer view.
 
+Also, use command `abl-datadigger.launchForDefaultProject` to start DataDigger immediately from a Task or Action button (external extension needed).
+
 ![Launch DataDigger](resources/images/launch.png)
 
 ## Settings
